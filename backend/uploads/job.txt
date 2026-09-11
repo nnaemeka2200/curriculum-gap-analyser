@@ -1,0 +1,3 @@
+Backend Developer - Paystack
+
+We are looking for a Backend Developer with experience in Python, SQL, REST APIs, and Git. Experience with Docker and AWS is a plus.
