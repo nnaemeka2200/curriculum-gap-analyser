@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
+const API_URL = "https://curriculum-gap-analyser-backend.onrender.com";
+
 const cardStyle: React.CSSProperties = {
   background: "#fff",
   borderRadius: "16px",
@@ -112,7 +114,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -152,7 +154,7 @@ function App() {
     formData.append("file", jobFile);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/upload-industry-requirement", {
+      const response = await fetch(`${API_URL}/upload-industry-requirement`, {
         method: "POST",
         body: formData,
       });
@@ -183,7 +185,7 @@ function App() {
     setGapError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/gap-analysis", {
+      const response = await fetch(`${API_URL}/gap-analysis`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -225,7 +227,7 @@ function App() {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/industry-requirement", {
+      const response = await fetch(`${API_URL}/industry-requirement`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -433,4 +435,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
