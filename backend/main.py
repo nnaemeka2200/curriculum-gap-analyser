@@ -101,6 +101,7 @@ async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db
     if extension not in ["pdf", "docx", "txt"]:
         raise HTTPException(status_code=400, detail="Unsupported file type. Please upload PDF, DOCX, or TXT.")
 
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
     file_path = os.path.join(UPLOAD_DIR, filename)
     with open(file_path, "wb") as f:
         content = await file.read()
@@ -142,6 +143,7 @@ async def upload_industry_requirement(file: UploadFile = File(...), db: Session 
     if extension not in ["pdf", "docx", "txt"]:
         raise HTTPException(status_code=400, detail="Unsupported file type. Please upload PDF, DOCX, or TXT.")
 
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
     file_path = os.path.join(UPLOAD_DIR, filename)
     with open(file_path, "wb") as f:
         content = await file.read()
