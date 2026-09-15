@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import os
 import json
 import PyPDF2
@@ -250,4 +252,27 @@ def gap_analysis(payload: dict, db: Session = Depends(get_db)):
         "missing_skills": missing_skills,
         "coverage_percentage": coverage_percentage,
         "recommendations": recommendations,
+    }
+@app.post("/gap-analysis-tfidf")
+def gap_analysis_tfidf(payload: dict):
+    curriculum_text = payload.get("curriculum_text", "")
+    job_text = payload.get("job_text", "")
+
+    if not curriculum_text.strip() or not job_text.strip():
+        return {
+            "similarity_score": 0,
+            "message": "Both curriculum_text and job_text are required.",
+        }
+
+    documents = [curriculum_text, job_text]
+
+    vectorizer = TfidfVectorizer(stop_words="english")
+    tfidf_matrix = vectorizer.fit_transform(documents)
+
+    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+    similarity_percentage = round(similarity * 100, 1)
+
+    return {
+        "similarity_score": round(float(similarity), 4),
+        "similarity_percentage": similarity_percentage,
     }
