@@ -92,6 +92,7 @@ function App() {
   const [recommendations, setRecommendations] = useState<string[]>([]);
   const [gapLoading, setGapLoading] = useState(false);
   const [gapError, setGapError] = useState("");
+  const [similarityPercentage, setSimilarityPercentage] = useState<number | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -196,11 +197,27 @@ function App() {
         }),
       });
       if (!response.ok) throw new Error("Gap analysis failed");
+      
       const data = await response.json();
-      setMatchedSkills(data.matched_skills);
-      setMissingSkills(data.missing_skills);
+setMatchedSkills(data.matched_skills);
+setMissingSkills(data.missing_skills);
+setRecommendations(data.recommendations);
+
+const tfidfResponse = await fetch(`${API_URL}/gap-analysis-tfidf`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    curriculum_text: extractedText,
+    job_text: jobFileExtractedText || description,
+  }),
+});
+if (tfidfResponse.ok) {
+  const tfidfData = await tfidfResponse.json();
+  setSimilarityPercentage(tfidfData.similarity_percentage);
+}
+
       setCoveragePercentage(data.coverage_percentage);
-      setRecommendations(data.recommendations);
+    
     } catch (err) {
       setGapError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -385,6 +402,12 @@ function App() {
                   <div style={{ fontSize: "28px", fontWeight: 700, color: "#c92a2a" }}>{missingSkills.length}</div>
                   <div style={{ fontSize: "13px", color: "#c92a2a" }}>Missing Skills</div>
                 </div>
+                <div style={{ ...statCardStyle, background: "#e8eaf6" }}>
+  <div style={{ fontSize: "28px", fontWeight: 700, color: "#4361ee" }}>
+    {similarityPercentage !== null ? `${similarityPercentage}%` : "—"}
+  </div>
+  <div style={{ fontSize: "13px", color: "#4361ee" }}>Text Similarity (TF-IDF)</div>
+</div>
               </div>
 
               <ResponsiveContainer width="100%" height={250}>
